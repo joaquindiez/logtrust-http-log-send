@@ -8,12 +8,31 @@
 
 // Apply the java-library plugin to add support for Java Library
 apply plugin: 'java-library'
-
+apply plugin: 'maven-publish'
 
 group = 'com.freesoullabs'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+
+publishing {
+    repositories {
+        maven {
+            name "logtrust-http-log-send"
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+            credentials {
+                username "${freeSoulLabsRepoUser}"
+                password "${freeSoulLabsRepoPassword}"
+            }
+        }
+    }
+    publications {
+        main(MavenPublication) {
+            from components.java
+        }
+    }
+}
 
 
 
