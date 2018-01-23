@@ -1,3 +1,5 @@
+package com.freesoullabs;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
