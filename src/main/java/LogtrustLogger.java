@@ -83,6 +83,12 @@ public class LogtrustLogger {
     private String defaultTag;
 
 
+
+    public Builder endPoint(String v) {
+      this.endPoint = v;
+      return this;
+    }
+
     public Builder domain(String v) {
       this.domain = v;
       return this;
