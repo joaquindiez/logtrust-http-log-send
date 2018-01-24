@@ -83,7 +83,7 @@ public class LogtrustLogger {
 
       try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
         for (String event : dataList) {
-          wr.write(encodeToHttp(event).getBytes());
+          wr.write(event.getBytes());
           wr.writeByte('\r');
           wr.writeByte('\n');
         }
@@ -101,13 +101,12 @@ public class LogtrustLogger {
     }
   }
 
-  private int checkSize(final String... dataList)
-          throws UnsupportedEncodingException {
+  private int checkSize(final String... dataList) {
 
     int sum = 0;
     for (String event : dataList) {
-      sum += encodeToHttp(event).getBytes().length;
-      sum += 2; //saltos de linea
+      sum += event.getBytes().length;
+      sum += 2; //2 byte because of CRLF
     }
     return sum;
   }
