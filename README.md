@@ -33,6 +33,8 @@ testCompile 'com.freesoullabs:logtrust-http-log-send:0.1.0-SNAPSHOT'
 
 ## Code Example
 
+#### Sending one event
+
 ```
         String token = "{your_token}";
         String tag = "{your table tag}";
@@ -46,4 +48,30 @@ testCompile 'com.freesoullabs:logtrust-http-log-send:0.1.0-SNAPSHOT'
 
         httpLogger.send("hello http data ");
 
+```
+
+#### Sending Multiple events in one request
+
+You can optimize the number of request sending data to Logtrust, sending and
+array of events. use the sendAll method in that case.
+
+```
+        String token = "{your_token}";
+        String tag = "{your table tag}";
+        String domain = "{your_domain}";
+        
+        LogtrustLogger httpLogger = new LogtrustLogger.Builder()
+            .domain(domain)
+            .token(token)
+            .defaultTag(tag)
+            .build();
+            
+        int max = 10;
+        String[] data = new String[10];
+        for (int i = 0; i < max; i++){
+         data[i] = "Hello world Buffered Data = " + i;
+        }
+
+    httpLogger.sendAll(data);
+    
 ```
