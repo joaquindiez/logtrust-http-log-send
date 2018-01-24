@@ -28,7 +28,7 @@ maven {
 add the following to the dependencies
 
 ```
-testCompile 'com.freesoullabs:logtrust-http-log-send:0.1.0-SNAPSHOT'
+compile 'com.freesoullabs:logtrust-http-log-send:0.2.1'
 ```
 
 ## Code Example
