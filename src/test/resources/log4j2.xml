@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF" monitorInterval="60" shutdownHook="disable">
+
+    <Properties>
+        <Property name="format_basic">%d{ISO8601}|%-5level|%logger{36}|%msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console  name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${format_basic}"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,5 +1,9 @@
 package com.freesoullabs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -8,6 +12,8 @@ import java.net.URLEncoder;
 
 
 public class LogtrustLogger {
+
+  private Logger log = LoggerFactory.getLogger(LogtrustLogger.class);
 
 
   private String endPoint;
@@ -44,25 +50,76 @@ public class LogtrustLogger {
       HttpURLConnection con = (HttpURLConnection) obj.openConnection();
       con.setRequestMethod("GET");
       int responseCode = con.getResponseCode();
-      System.out.println("Response Code : " + responseCode);
-      System.out.println("Response: " + con.getResponseMessage());
+      log.debug("Response Code : {}", responseCode);
+      log.debug("Response: {}", con.getResponseMessage());
     } catch (UnsupportedEncodingException e) {
-      System.err.println("Cannot encode message: " + e.getMessage());
+      log.error("Cannot encode message: {}", e.getMessage());
       e.printStackTrace();
     } catch (IOException e) {
-      System.err.println(e.getMessage());
+      log.error(e.getMessage());
       e.printStackTrace();
     }
   }
 
-  public static String encodeToHttp(String str)
+
+  public void sendAll(final String... dataList) {
+
+    try {
+      final String url = generatePostUrl(
+              endPoint,
+              domain,
+              token,
+              host,
+              tag);
+
+      URL obj = new URL(url);
+      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+      con.setRequestMethod("POST");
+      con.setDoOutput(true);
+      con.setInstanceFollowRedirects(false);
+      con.setRequestProperty("charset", "utf-8");
+      con.setRequestProperty("Content-Length",
+              Integer.toString(checkSize(dataList)));
+
+      try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
+        for (String event : dataList) {
+          wr.write(encodeToHttp(event).getBytes());
+          wr.writeByte('\r');
+          wr.writeByte('\n');
+        }
+      }
+
+      int responseCode = con.getResponseCode();
+      log.debug("Response Code : {}", responseCode);
+      log.debug("Response: {}", con.getResponseMessage());
+    } catch (UnsupportedEncodingException e) {
+      log.error("Cannot encode message: {}", e.getMessage());
+      e.printStackTrace();
+    } catch (IOException e) {
+      log.error(e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  private int checkSize(final String... dataList)
+          throws UnsupportedEncodingException {
+
+    int sum = 0;
+    for (String event : dataList) {
+      sum += encodeToHttp(event).getBytes().length;
+      sum += 2; //saltos de linea
+    }
+    return sum;
+  }
+
+  protected static String encodeToHttp(String str)
           throws UnsupportedEncodingException {
     return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
   }
 
-  public static String generateUrl(String serverPath, String domain,
-                                   String token, String hostname,
-                                   String tag, String msg) {
+  protected static String generateUrl(String serverPath, String domain,
+                                      String token, String hostname,
+                                      String tag, String msg) {
 
     return new StringBuilder(serverPath)
             .append("/event/")
@@ -71,6 +128,19 @@ public class LogtrustLogger {
             .append(hostname).append("/")
             .append(tag).append("?")
             .append(msg)
+            .toString();
+  }
+
+  protected static String generatePostUrl(String serverPath, String domain,
+                                          String token, String hostname,
+                                          String tag) {
+
+    return new StringBuilder(serverPath)
+            .append("/stream/")
+            .append(domain).append("/token!")
+            .append(token).append("/")
+            .append(hostname).append("/")
+            .append(tag)
             .toString();
   }
 
@@ -83,7 +153,6 @@ public class LogtrustLogger {
     private String token;
     private String host = "-";
     private String defaultTag;
-
 
 
     public Builder endPoint(String v) {
